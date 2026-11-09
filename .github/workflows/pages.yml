@@ -2,7 +2,7 @@ name: Deploy GSDVPred website
 
 on:
   push:
-    branches: [master, main]
+    branches: [main]
     paths:
       - '**'
       - '.github/workflows/pages.yml'
