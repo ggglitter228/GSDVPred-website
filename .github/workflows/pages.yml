@@ -4,7 +4,7 @@ on:
   push:
     branches: [master, main]
     paths:
-      - 'Scripts_Results/07.web/**'
+      - '**'
       - '.github/workflows/pages.yml'
   workflow_dispatch:
 
