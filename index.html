@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="GSDVPred - pathogenicity prediction for germline sequence variants.">
+  <title>GSDVPred | Variant pathogenicity prediction</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#predict" aria-label="GSDVPred home">
+        <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span class="brand-name">GSDV<span>Pred</span></span>
+      </a>
+      <div class="topbar-meta">
+        <span class="model-pill"><span class="status-dot"></span> AdaBoost v1.0</span>
+        <a class="github-link" href="#downloads"><i data-lucide="folder-down"></i><span>Resources</span></a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" id="predict">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-line"></span> Germline variant interpretation</p>
+          <h1>Genetic Skeletal Disoders <em>Variant Prediction</em></h1>
+          <p class="hero-subtitle"><strong>GSDVPred</strong> is a disease-specific machine learning predictor for the pathogenicity of rare single nucleotide variants (SNVs) in genes associated with genetic skeletal disorders, and it outperforms existing genome-wide prediction tools.</p>
+          <div class="hero-note"><i data-lucide="shield-check"></i><span>Computational evidence only - use alongside ACMG/AMP criteria</span></div>
+        </div>
+
+      </section>
+
+      <nav class="tabs" aria-label="Application sections">
+        <button class="tab is-active" data-tab="predict">Predict <span class="tab-count">01</span></button>
+        <button class="tab" data-tab="about">About the model</button>
+        <button class="tab" data-tab="downloads">Downloads</button>
+      </nav>
+
+      <section class="tab-panel is-active" data-panel="predict">
+        <div class="workspace-grid">
+          <aside class="input-panel panel">
+            <div class="panel-heading">
+              <div><p class="panel-kicker">01 / INPUT</p><h2>Prepare a query</h2></div>
+              <span class="help-badge" title="Accepted input formats">?</span>
+            </div>
+
+            <div class="input-mode" role="radiogroup" aria-label="Input mode">
+              <button class="mode-btn is-active" data-mode="paste" type="button"><i data-lucide="clipboard-paste"></i> Paste variants</button>
+              <button class="mode-btn" data-mode="upload" type="button"><i data-lucide="upload"></i> Upload_variant</button>
+            </div>
+
+            <div class="mode-panel is-active" data-mode-panel="paste">
+              <label class="field-label" for="variant-input">Variant query <span>one per line</span></label>
+              <textarea id="variant-input" spellcheck="false" placeholder="ASXL1:c.1429G>C">ASXL1:c.1429G>C</textarea>
+              <button class="text-btn" id="load-example" type="button">Run example</button>
+              <div class="field-hint"><i data-lucide="info"></i><span>Input GENE:c.HGVS (one variant per line), or chromosome:position:REF:ALT. Upload a text/CSV variant list or VCF file.</span></div>
+            </div>
+
+            <div class="mode-panel" data-mode-panel="upload">
+              <label class="dropzone" for="vcf-file"><i data-lucide="file-up"></i><strong>Upload_variant</strong><span>or browse from your computer</span><input id="vcf-file" type="file" accept=".vcf,.txt,.csv"></label>
+              <a class="text-btn" href="assets/Upload_variant.csv" download>Download example file</a><p class="upload-name" id="upload-name">No file selected</p>
+            </div>
+
+            <div class="input-footer"><span><i data-lucide="database"></i> Published results lookup</span><button class="text-btn" id="clear-input" type="button">Clear</button></div>
+            <button class="primary-btn" id="run-prediction" type="button"><i data-lucide="search"></i><span>Look up results</span><span class="btn-arrow">&#8594;</span></button>
+            <p class="demo-note" id="run-status" aria-live="polite">Static lookup: only variants in the published ClinVar results dataset have stored scores. This page does not run the prediction model.</p>
+          </aside>
+
+          <section class="results-panel panel" aria-live="polite">
+            <div class="panel-heading results-heading">
+              <div><p class="panel-kicker">02 / RESULTS</p><h2>Variant prediction results</h2></div>
+              <button class="icon-btn" id="download-results" type="button" title="Download results"><i data-lucide="download"></i></button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Variant / gene</th><th>Consequence</th><th>cDNA / protein change</th><th>GSDVPred score / result</th><th>CADD</th><th>SIFT</th><th>REVEL</th><th>AlphaMissense</th></tr></thead>
+                <tbody id="results-body"><tr><td colspan="8" class="empty-state">Enter a variant to look up a stored result.</td></tr></tbody>
+              </table>
+            </div>
+            <div class="score-scale">
+              <div class="scale-head"><span>Score interpretation</span><span>Each tool uses its own scale</span></div>
+              <div class="score-ranges" aria-label="Prediction tool score ranges">
+                <div><strong>GSDVPred</strong><span>0-1 probability; &le;0.10 benign range, 0.10-0.90 intermediate, &ge;0.90 pathogenic range</span></div>
+                <div><strong>CADD</strong><span>Raw PHRED convention: &le;10 lower, 10-15 intermediate, &ge;15 stronger deleterious support</span></div>
+                <div><strong>SIFT</strong><span>Raw score 0-1; &le;0.05 deleterious, &gt;0.05 tolerated</span></div>
+                <div><strong>REVEL</strong><span>Raw score 0-1; this project uses &ge;0.5 as pathogenic support and &lt;0.5 as benign support</span></div>
+                <div><strong>AlphaMissense</strong><span>Raw score 0-1; this project uses &ge;0.5 pathogenic, &gt;0.34 and &lt;0.5 intermediate, &le;0.34 benign</span></div>
+              </div>
+              <p class="score-caveat">CADD values are original PHRED scores; SIFT, REVEL and AlphaMissense values are original annotation scores. Missing annotations are shown as &mdash;. Tool thresholds are prioritisation conventions and do not constitute a clinical diagnosis.</p>
+            </div>
+            <div class="results-foot"><span><i data-lucide="circle-alert"></i> Scores indicate computational evidence, not a clinical diagnosis.</span><button class="outline-btn" id="view-all" type="button">View all rows <i data-lucide="list"></i></button></div>
+          </section>
+        </div>
+
+        <div class="lower-grid lower-grid-single">
+          <article class="method-card panel"><div class="card-top"><div><p class="panel-kicker">METHOD</p><h3>Calibrated AdaBoost</h3></div><i data-lucide="wand-sparkles" class="method-icon"></i></div><p>Ensemble model trained on curated ClinVar labels with Platt probability calibration for interpretable scores.</p><div class="method-chips"><span>ClinVar</span><span>ACMG PP3</span></div></article>
+        </div>
+      </section>
+
+      <section class="tab-panel content-panel" data-panel="about">
+        <div class="content-heading"><p class="eyebrow"><span class="eyebrow-line"></span> About the model</p><h2>GSDVPred model information</h2><p>Scientific context, intended use, limitations, disease scope, and score interpretation for GSDVPred.</p></div>
+        <div class="about-sections">
+          <article class="about-section">
+            <p class="section-index">01</p>
+            <div><h3>About GSDVPred</h3><p>GSDVPred is a disease-specific machine-learning classifier developed to estimate the pathogenicity of single nucleotide variants in genes associated with genetic skeletal disorders. It combines multiple functional, conservation, and ensemble prediction features and reports a calibrated probability for variant prioritisation.</p></div>
+          </article>
+          <article class="about-section">
+            <p class="section-index">02</p>
+            <div><h3>Recommended Usage</h3><p>Use the GSDVPred score as supporting computational evidence during variant interpretation. The result should be considered together with population frequency, phenotype, segregation, functional evidence, inheritance pattern, and other ACMG/AMP criteria.</p><div class="callout"><i data-lucide="triangle-alert"></i><div><strong>Not a standalone clinical decision tool</strong><span>A high score does not by itself establish a pathogenic clinical classification.</span></div></div></div>
+          </article>
+          <article class="about-section">
+            <p class="section-index">03</p>
+            <div><h3>Limitations</h3><p>This static website looks up variants in a published ClinVar prediction table. It does not annotate new variants or run the trained model. Coverage is limited to records in that file, and performance may vary across genes and variant consequences. GSDVPred does not replace expert review or clinical interpretation.</p></div>
+          </article>
+          <article class="about-section">
+            <p class="section-index">04</p>
+            <div><h3>Genetic Skeletal Disorders</h3><p>Genetic skeletal disorders are a heterogeneous group of inherited conditions affecting the growth, development, differentiation, and maintenance of bone, cartilage, and joints. GSDVPred focuses on variants in the curated GSD-associated gene set used by this project.</p><div class="scope-chips"><span>Curated GSD genes</span><span>Single nucleotide variants</span></div></div>
+          </article>
+          <article class="about-section">
+            <p class="section-index">05</p>
+            <div><h3>Score Interpretation</h3><p>GSDVPred values are calibrated probabilities. The display ranges are presentation thresholds for prioritisation and are not clinical classifications. Comparison tools have distinct score scales and should not be compared numerically across methods.</p><div class="criteria-grid"><div class="criterion benign"><strong>&le; 0.10</strong><span>GSDVPred benign range</span></div><div class="criterion uncertain"><strong>0.10 - 0.90</strong><span>GSDVPred intermediate</span></div><div class="criterion pathogenic"><strong>&ge; 0.90</strong><span>GSDVPred pathogenic range</span></div></div></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="tab-panel content-panel" data-panel="downloads" id="downloads">
+        <div class="content-heading"><p class="eyebrow"><span class="eyebrow-line"></span> Download</p><h2>ClinVar data prediction</h2><p>Download GSDVPred predictions for the curated ClinVar test dataset.</p></div>
+        <div class="download-list"><a class="download-row" href="assets/ClinVar_data_prediction.csv" download><span class="file-icon"><i data-lucide="table-2"></i></span><span><strong>Clinvar data prediction</strong><small>CSV - variant annotations and GSDVPred scores</small></span><i data-lucide="download"></i></a></div>
+      </section>
+    </main>
+
+    <footer><span>GSDVPred - research prototype</span><span>Built for transparent variant prioritisation</span></footer>
+  </div>
+  <script src="assets/predictions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
