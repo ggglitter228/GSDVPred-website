@@ -111,6 +111,7 @@ function escapeHtml(value) {
 }
 
 function renderRows() {
+  $('#download-results').disabled = !state.rows.length;
   const visible = state.rows.slice(0, state.showAll ? state.rows.length : 8);
   $('#results-body').innerHTML = visible.map((row) => {
     if (!row.found) return `<tr><td><code>${escapeHtml(row.query)}</code><small>No exact match in this results dataset</small></td><td colspan="7"><span class="class-tag missing">No stored prediction</span></td></tr>`;
@@ -150,7 +151,12 @@ $('#clear-input').addEventListener('click', () => {
   $('#variant-input').value = '';
   $('#vcf-file').value = '';
   $('#upload-name').textContent = 'No file selected';
+  $$('.example-choice').forEach((choice) => { choice.checked = false; });
   state.rows = [];
+  state.showAll = false;
+  $('#download-results').disabled = true;
+  $('#view-all').hidden = true;
+  $('#run-status').textContent = 'Enter variants or select examples, then click Run to view results.';
   $('#results-body').innerHTML = '<tr><td colspan="8" class="empty-state">Enter a variant to look up a stored result.</td></tr>';
 });
 $('#run-prediction').addEventListener('click', async () => {
@@ -179,14 +185,19 @@ $('#run-prediction').addEventListener('click', async () => {
     button.disabled = false;
   }
 });
-$('#load-example').addEventListener('click', () => {
-  activateMode('paste');
-  $('#variant-input').value = 'ASXL1:c.1429G>C';
-  $('#run-prediction').click();
+$$('.example-choice').forEach((choice) => choice.addEventListener('change', () => {
+  const input = $('#variant-input');
+  const values = input.value.split(/\r?\n/).map((value) => value.trim()).filter(Boolean);
+  if (choice.checked && !values.includes(choice.value)) values.push(choice.value);
+  input.value = values.filter((value) => choice.checked || value !== choice.value).join('\n');
+}));
+$('#variant-input').addEventListener('input', () => {
+  const values = $('#variant-input').value.split(/\r?\n/).map((value) => value.trim());
+  $$('.example-choice').forEach((choice) => { choice.checked = values.includes(choice.value); });
 });
 $('#download-results').addEventListener('click', downloadCsv);
 $('#view-all').addEventListener('click', () => { state.showAll = !state.showAll; renderRows(); });
 
-state.rows = findRows([$ ('#variant-input').value]);
-renderRows();
+$('#download-results').disabled = true;
+$('#view-all').hidden = true;
 if (window.lucide) window.lucide.createIcons();

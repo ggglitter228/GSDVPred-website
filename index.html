@@ -50,14 +50,14 @@
             </div>
 
             <div class="input-mode" role="radiogroup" aria-label="Input mode">
-              <button class="mode-btn is-active" data-mode="paste" type="button"><i data-lucide="clipboard-paste"></i> Paste variants</button>
-              <button class="mode-btn" data-mode="upload" type="button"><i data-lucide="upload"></i> Upload_variant</button>
+              <button class="mode-btn is-active" data-mode="paste" type="button"><i data-lucide="clipboard-paste"></i> Pasted Data</button>
+              <button class="mode-btn" data-mode="upload" type="button"><i data-lucide="upload"></i> Uploaded Files</button>
             </div>
 
             <div class="mode-panel is-active" data-mode-panel="paste">
               <label class="field-label" for="variant-input">Variant query <span>one per line</span></label>
-              <textarea id="variant-input" spellcheck="false" placeholder="ASXL1:c.1429G>C">ASXL1:c.1429G>C</textarea>
-              <button class="text-btn" id="load-example" type="button">Run example</button>
+              <textarea id="variant-input" spellcheck="false" placeholder="TRPV4:c.2401A&gt;G"></textarea>
+              <div class="example-description"><span>e.g.:</span><div class="example-options"><label class="example-option"><input type="checkbox" class="example-choice" value="TRPV4:c.2401A>G"><span>TRPV4:c.2401A&gt;G</span></label><label class="example-option"><input type="checkbox" class="example-choice" value="CYP2R1:c.296T>C"><span>CYP2R1:c.296T&gt;C</span></label><label class="example-option"><input type="checkbox" class="example-choice" value="TRAF7:c.1204C>G"><span>TRAF7:c.1204C&gt;G</span></label><label class="example-option"><input type="checkbox" class="example-choice" value="ZNF462:c.5984A>G"><span>ZNF462:c.5984A&gt;G</span></label><label class="example-option"><input type="checkbox" class="example-choice" value="NBAS:c.915G>A"><span>NBAS:c.915G&gt;A</span></label><label class="example-option"><input type="checkbox" class="example-choice" value="AMER1:c.697G>T"><span>AMER1:c.697G&gt;T</span></label></div></div>
               <div class="field-hint"><i data-lucide="info"></i><span>Input GENE:c.HGVS (one variant per line), or chromosome:position:REF:ALT. Upload a text/CSV variant list or VCF file.</span></div>
             </div>
 
@@ -67,14 +67,14 @@
             </div>
 
             <div class="input-footer"><span><i data-lucide="database"></i> Published results lookup</span><button class="text-btn" id="clear-input" type="button">Clear</button></div>
-            <button class="primary-btn" id="run-prediction" type="button"><i data-lucide="search"></i><span>Look up results</span><span class="btn-arrow">&#8594;</span></button>
+            <button class="primary-btn" id="run-prediction" type="button"><i data-lucide="search"></i><span>Run</span><span class="btn-arrow">&#8594;</span></button>
             <p class="demo-note" id="run-status" aria-live="polite">Static lookup: only variants in the published ClinVar results dataset have stored scores. This page does not run the prediction model.</p>
           </aside>
 
           <section class="results-panel panel" aria-live="polite">
             <div class="panel-heading results-heading">
               <div><p class="panel-kicker">02 / RESULTS</p><h2>Variant prediction results</h2></div>
-              <button class="icon-btn" id="download-results" type="button" title="Download results"><i data-lucide="download"></i></button>
+              <button class="icon-btn" id="download-results" type="button" title="Download results" disabled><i data-lucide="download"></i></button>
             </div>
             <div class="table-wrap">
               <table>
@@ -93,7 +93,7 @@
               </div>
               <p class="score-caveat">CADD values are original PHRED scores; SIFT, REVEL and AlphaMissense values are original annotation scores. Missing annotations are shown as &mdash;. Tool thresholds are prioritisation conventions and do not constitute a clinical diagnosis.</p>
             </div>
-            <div class="results-foot"><span><i data-lucide="circle-alert"></i> Scores indicate computational evidence, not a clinical diagnosis.</span><button class="outline-btn" id="view-all" type="button">View all rows <i data-lucide="list"></i></button></div>
+            <div class="results-foot"><span><i data-lucide="circle-alert"></i> Scores indicate computational evidence, not a clinical diagnosis.</span><button class="outline-btn" id="view-all" type="button" hidden>View all rows <i data-lucide="list"></i></button></div>
           </section>
         </div>
 
